@@ -1,0 +1,65 @@
+# Select chromosomes you want to analyse and merge
+#  separate ranges with ":" and listed chromosomes
+#  with ","
+#  You can put both in the same string.
+chroms: "1:22"
+
+perm: false
+test: logistic #logistic and linear are the options
+keepgenos: false
+
+base_dir: /sc/arion/projects/LOAD/Data/ADGC/ADGC_2018/Brian_pipeline_withfamily_and_adc8
+
+studies:
+  ADGC:
+    # Cohorts
+    ## List of all cohorts in study (DO NOT TOUCH UNLESS STUDY UPDATED)
+    cohorts_all: [ACT, ACT2, ADC1, ADC2, ADC3, ADC4, ADC5, ADC6, ADC7, ADC8,
+                  ADC9, ADC10, ADNI, BIOCARD, CHAP, EAS, GSK, MAYO, MIRAGE,
+                  NBB, LOAD, OHSU, RMayo, ROSMAP, ROSMAP2, TARC1, TGEN2, UKS,
+                  UMVUMSSM, MTV, UPITT, WASHU, WASHU2, WHICAP]
+    cohorts_fam: [LOAD, MIRAGE]
+    #first cohort is the default for dummy variables. Spaces are disallowed
+
+    ## Suggested exclusions due to sample size issues, categorized by severity:
+
+    ## RECOMMENDED: UKS, BIOCARD, EAS, ACT2, RMayo, WASHU2
+    ## OPTIONAL: CHAP, ROSMAP2, NBB
+
+    ## Additional for ADSP exclusion:
+    ## RECOMMENDED: CHAP
+    ## OPTIONAL: WHICAP
+    cohorts: [UKS, BIOCARD, EAS, ACT2, RMayo, WASHU2]
+    default_cohort: UPITT
+    exclude_cohorts: true
+    # Only include family cohorts if removing related samples
+    exclude_fams: false
+
+    # Files:
+    geno: '{basedir}/data/wsum_r2_0.8/ADGC_wsumR2_0.8' #PLINK file stem
+    pheno: '{basedir}/ADGC_withAllPCs.withADSPexclusions.pheno.tsv'
+
+    # Phenotype filters
+    filter: 'status < 3 & !is.na(aaoaae2) & !is.na(APOE) & !(rel_omit | ADGC_omit | QC_omit)'
+
+    PC_format: "jointPC{}"
+
+    covariates: #Put {pcs} to expand to all PCs. {cht} will expand to cohort dummies.
+      ageapoe: "aaoaae2, APOE_23, APOE_24, APOE_34, APOE_44, {pcs}, {cht}"
+      age: "aaoaae2, {pcs}, {cht}"
+      apoe: "APOE_23, APOE_24, APOE_34, APOE_44, {pcs}, {cht}"
+      pccohortonly: "{pcs}, {cht}"
+
+PC_N: 10
+
+maf:
+  5percent: 0.05
+  2percent: 0.02
+
+modules:
+  plink: "plink/1.90b6.10"
+  bcftools: "bcftools/1.9"
+  R: "R/3.6.3"
+  pandoc: "pandoc/2.6"
+  udunits: "udunits/2.2.26"
+  metal: "metal/2011-03-25"
